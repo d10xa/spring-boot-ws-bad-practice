@@ -1,0 +1,24 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://d10xa.ru/schema/bad-practice/countries-service"
+           elementFormDefault="qualified"
+           xmlns:c="http://d10xa.ru/schema/bad-practice/country">
+
+   <xs:import namespace="http://d10xa.ru/schema/bad-practice/country" schemaLocation="country.xsd"></xs:import>
+
+   <xs:element name="getCountryRequest">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+
+   <xs:element name="getCountryResponse">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="country" type="c:country"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+
+</xs:schema>
