@@ -1,0 +1,58 @@
+plugins {
+    id "ru.d10xa.download-xml" version "0.0.5"
+}
+ext {
+    generatedDir = "${projectDir}/generated"
+    generatedJavaDir = "${projectDir}/generated/src/main/java"
+}
+apply plugin: 'java'
+
+sourceCompatibility = 1.6
+
+repositories {
+    jcenter()
+}
+
+clean {
+    delete generatedDir
+}
+
+configurations { provided }
+
+dependencies {
+    provided 'com.sun.xml.bind:jaxb-impl:2.2.6'
+    provided 'com.sun.xml.bind:jaxb-xjc:2.2.6'
+}
+
+task xjc {
+    ant.taskdef(name: 'xjc', classname: 'com.sun.tools.xjc.XJCTask', classpath: configurations.provided.asPath)
+    doLast {
+        file(generatedJavaDir).mkdirs()
+        ant.xjc(destdir: generatedJavaDir, removeOldOutput: 'yes', extension: 'true') {
+            arg(line: '-wsdl')
+            schema(dir: 'build', includes: "service.wsdl")
+        }
+    }
+}
+
+sourceSets.main.java.srcDirs += generatedJavaDir
+
+task download << {
+    downloadXml {
+        src(['http://localhost:8080/ws/countries.wsdl'])
+        dest buildDir
+        locations {
+            malformedLocationHandler {
+                "http://localhost:8080/$it"
+            }
+        }
+        namespaceToFile([
+                'http://d10xa.ru/schema/bad-practice/countries-service':'service.wsdl',
+                'http://d10xa.ru/schema/bad-practice/country':'country.xsd',
+                'http://d10xa.ru/schema/bad-practice/currency':'currency.xsd'
+        ])
+    }
+}
+
+compileJava.dependsOn xjc
+xjc.dependsOn download
