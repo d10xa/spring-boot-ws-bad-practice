@@ -19,6 +19,13 @@ repositories {
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+//allows to run ./gradle bootRun -Pserver.port=8081
+tasks.withType(org.springframework.boot.gradle.run.BootRunTask) {
+    if(project.hasProperty('server.port')){
+        systemProperty('server.port', project.getProperty('server.port'))
+    }
+}
+
 configurations {
     jaxb
 }

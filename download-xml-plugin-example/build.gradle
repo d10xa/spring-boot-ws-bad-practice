@@ -2,6 +2,7 @@ plugins {
     id "ru.d10xa.download-xml" version "0.0.5"
 }
 ext {
+    baseUrl = project.getProperty("base.url")?:'http://localhost:8080'
     generatedDir = "${projectDir}/generated"
     generatedJavaDir = "${projectDir}/generated/src/main/java"
 }
@@ -39,11 +40,11 @@ sourceSets.main.java.srcDirs += generatedJavaDir
 
 task download << {
     downloadXml {
-        src(['http://localhost:8080/ws/countries.wsdl'])
+        src(["$baseUrl/ws/countries.wsdl"])
         dest buildDir
         locations {
             malformedLocationHandler {
-                "http://localhost:8080/$it"
+                "$baseUrl/$it"
             }
         }
         namespaceToFile([
